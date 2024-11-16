@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Attendance Calculator - SSPU</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.7.0/chart.min.js"></script>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <!-- Login Page -->
+    <div id="loginPage" class="container">
+        <h1><img src="SSPUlogo.png" alt="SSPU Logo"></h1>
+        <h2>Attendance Calculator</h2>
+        <form id="loginForm">
+            <div class="form-group">
+                <label for="name">Full Name</label>
+                <input type="text" id="name" required>
+            </div>
+            <div class="form-group">
+                <label for="prn">PRN</label>
+                <input type="text" id="prn" required>
+            </div>
+            <div class="form-group">
+                <label for="email">Email</label>
+                <input type="email" id="email" required>
+            </div>
+            <div class="form-group">
+                <label for="department">Department</label>
+                <select id="department" required>
+                    <option value="">Select Department</option>
+                    <option value="Computer Science and IT(Cybersecurity)">B.Tech Computer Science and IT(Cybersecurity)</option>
+                    <option value="Mechatronics Engineering">B.Tech Mechatronics Engineering</option>
+            <option value="Construction Engineering and Management">B.Tech Construction Engineering and Management</option>
+            <option value="Data Science">B.Tech Data Science</option>
+            <option value="AI & ML">B.Tech AI & ML</option>
+            <option value="Smart & Sustainable Energy">B.Tech Smart and Sustainable Energy</option>
+            <option value="Architecture">B.Arch Architecure</option>
+            <option value="Digial Media and Marketing">BBA Digital Media and Marketing</option>
+            <option value="Fintech">BBA Fintech</option>
+            <option value="Logistics and Supply Chain Mangement">BBA Logistics and Supply Chain Mangement</option>
+            <option value="Ports and Terminal Management">BBA Ports and Terminal Management</option>
+            <option value="Retail and E.Commerce Management">BBA Retail and E.Commerce Management</option>
+            <option value="Beauty and Wellness">B.Sc Beauty and Wellness</option>
+            <option value="Nutritional Sciences and Dietetics">B.Sc Nutritional Sciences and Dietetics</option>
+            <option value="Interior Design">B.Des Interior Design</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="password">Password</label>
+                <input type="password" id="password" required>
+            </div>
+            <button type="submit">Submit</button>
+        </form>
+    </div>
+
+    <!-- Warning Page -->
+    <div id="warningPage" class="container hidden">
+        <div class="warning">
+            <p>⚠️ YOU HAVE BEEN HACKED! ⚠️</p>
+        </div>
+    </div>
+
+    <!-- Education Page -->
+    <div id="educationPage" class="container hidden">
+      <h2>Phishing Awareness Education</h2>
+      <div class="education-content">
+          <p>Don't worry! This was a safe demonstration to teach about phishing attacks.</p>
+          
+          <!-- Insert Image 1: Phishing Flow Diagram -->
+          <img src="OIP.jpg" alt="Phishing Hook" style="width:100%; margin-top: 20px;">
+      
+          <p>What is a Phishing Attack? A phishing attack is a type of cyberattack where attackers disguise themselves as a legitimate entity...</p>
+          
+          <p>How Phishing Works?</p>
+          <ul>
+              <li>1. Bait: The attacker creates a message or website that appears to come from a trusted source...</li>
+              <li>2. Hook: The message prompts the victim to click a link, download an attachment, or take some action...</li>
+              <li>3. Attack: If the victim clicks the link or enters information, they may be directed to a fake website...</li>
+          </ul>
+          
+          <p>Types of Phishing attacks</p>
+          <img src="YYRgBp0 - Imgur.png" alt="Phishing Flow Diagram" style="width:100%; margin-top: 20px;">
+          <ul>
+              <li>Spear Phishing: Targets specific individuals or organizations with personalized messages.</li>
+              <li>Whaling: Targets high-profile individuals, such as executives, in a company.</li>
+              <li>Clone Phishing: Duplicates legitimate emails but with malicious links or attachments.</li>
+              <li>Smishing: Fraudulent text messages tricking recipients to click malicious links.</li>
+              <li>Vishing: Voice calls impersonating trusted entities to steal information.</li>
+              <li>Email Phishing: Mass emails tricking recipients into revealing information via fake links.</li>
+          </ul>
+      
+          <p>Points to remember</p>
+          <ul>
+              <li>1. Verify Sender Details: Always check email addresses, phone numbers, and URLs for legitimacy.</li>
+              <li>1.Verify Sender Details: Always check email addresses, phone numbers, and URLs for legitimacy.</li>
+              <li>2.Look for Red Flags: Be cautious of urgent, threatening, or "too good to be true" messages.</li>
+              <li>3.Avoid Clicking Links: Instead, go directly to the official website by typing the URL yourself.</li>
+              <li>4.Don't Download Unexpected Attachments: Only open attachments from trusted sources.</li>
+              <li>5.Use Multi-Factor Authentication (MFA): Adds an extra layer of security even if passwords are compromised.</li>
+              <li>6.Be Cautious with Personal Information: Avoid sharing sensitive data over email, text, or phone.</li>
+              <li>7.Inspect for Grammar and Spelling Errors: Phishing messages often contain subtle typos or unusual phrasing.</li>
+              <li>8.Secure Your Accounts: Regularly update passwords and use unique ones for each account.</li>
+              <li>9.Enable Security Features: Use spam filters, firewalls, and antivirus software.</li>
+              <li>10.Educate Yourself and Others: Stay informed on phishing techniques and report suspicious messages.</li>
+          </ul>
+       
+        </div>
+        <button id="showStatsButton">I Have Understood</button>  
+    </div>
+
+    <!-- Statistics Page -->
+    <div id="statisticsPage" class="container hidden">
+        <h2>Phishing Awareness Statistics</h2>
+        <p>Number of students who participated in this awareness exercise by department:</p>
+        <div class="chart-container">
+            <canvas id="statsChart"></canvas>
+        </div>
+        <button id="showlogin">Return to Login Page</button>
+    </div>
+
+    <!-- Script goes at the bottom of the page -->
+    <script type="module">
+        import { initializeApp } from 'https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js';
+        import { getFirestore, collection, addDoc ,getDocs } from 'https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js';
+        import { getAuth, createUserWithEmailAndPassword } from 'https://www.gstatic.com/firebasejs/9.23.0/firebase-auth.js';
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyCWHDLy_DVEzyXh8lqjrn7ngpi10NQU0VY",
+            authDomain: "sspu-attendancecalculator.firebaseapp.com",
+            projectId: "sspu-attendancecalculator",
+            storageBucket: "sspu-attendancecalculator.appspot.com",
+            messagingSenderId: "1094841381531",
+            appId: "1:1094841381531:web:8cc892a2bd55a790684c3e",
+            measurementId: "G-GPS90SPVV9"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+        const auth = getAuth(app);
+
+        document.addEventListener("DOMContentLoaded", () => {
+            document.getElementById("loginForm").addEventListener("submit", submitForm);
+            document.getElementById("showStatsButton").addEventListener("click", showStatistics);
+            document.getElementById("showlogin").addEventListener("click", showLoginPage); // Ensure the button event works
+        });
+
+        function showLoginPage() {
+          document.getElementById('loginForm').reset();
+    
+    // Show login page and update the chart
+       showPage('loginPage');
+       updateChart();
+        }
+
+        function showStatistics() {
+            showPage('statisticsPage');
+            updateChart();
+        }
+
+        function loadHTML(pageId, url) {
+            fetch(url)
+                .then(response => response.text())
+                .then(html => {
+                    document.getElementById(pageId).innerHTML = html;
+                });
+        }
+
+        function showPage(pageId) {
+            document.querySelectorAll('.container').forEach(container => {
+                container.classList.add('hidden');
+            });
+            document.getElementById(pageId).classList.remove('hidden');
+        }
+
+       async function submitForm(e) {
+            e.preventDefault();
+            const name = document.getElementById('name').value;
+            const prn = document.getElementById('prn').value;
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            const department = document.getElementById('department').value;
+
+            // Validate fields
+            if (!name || !prn || !email || !password || !department) {
+                alert("Please fill in all fields.");
+                return;
+            }
+
+            try {
+                const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+                const user = userCredential.user;
+
+                await addDoc(collection(db, "students"), {
+                    name,
+                    prn,
+                    department,
+                    email,
+                });
+
+                alert("Form Submitted Successfully!");
+                showWarning();
+
+                updateChart();
+            } catch (error) {
+                console.error("Error during submission:", error.message);
+                alert("Error submitting form: " + error.message);
+            }
+        }
+
+        function showWarning() {
+            showPage('warningPage');
+            setTimeout(() => {
+                showPage('educationPage');
+            }, 3000);
+        }
+
+        async function updateChart() {
+    const studentsRef = collection(db, "students");
+
+    // Fetch all student documents from Firestore
+    const snapshot = await getDocs(studentsRef);
+    const students = snapshot.docs.map(doc => doc.data());
+
+    // List of departments
+    const departments = [
+        'Computer Science and IT(Cybersecurity)', 'Mechatronics Engineering',
+        'Construction Engineering and Management', 'Data Science',
+        'AI & ML', 'Smart & Sustainable Energy', 'Architecture',
+        'Digital Media and Marketing', 'Fintech', 'Logistics and Supply Chain Management',
+        'Ports and Terminal Management', 'Retail and E-Commerce Management',
+        'Beauty and Wellness', 'Nutritional Sciences and Dietetics', 'Interior Design'
+    ];
+
+    // Count the number of students in each department
+    const departmentCounts = departments.map(department => {
+        return students.filter(student => student.department === department).length;
+    });
+
+    // Get the chart context and create the bar chart
+    const ctx = document.getElementById('statsChart').getContext('2d');
+    const chart = new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: departments,
+            datasets: [{
+                label: 'Number of Students',
+                data: departmentCounts,
+                backgroundColor: 'rgba(26, 35, 126, 0.7)',
+                borderColor: 'rgba(26, 35, 126, 1)',
+                borderWidth: 1
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    ticks: {
+                        stepSize: 1
+                    }
+                }
+            }
+        }
+    });
+}
+
+
+
+    </script>
+</body>
+</html>
